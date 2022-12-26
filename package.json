@@ -1,0 +1,22 @@
+{
+  "name": "nft",
+  "version": "1.0.0",
+  "description": "nft marketplace",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Poudel0/nft.git"
+  },
+  "author": "Sandesh Poudel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Poudel0/nft/issues"
+  },
+  "homepage": "https://github.com/Poudel0/nft#readme",
+  "devDependencies": {
+    "hardhat": "^2.12.4"
+  }
+}
