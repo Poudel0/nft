@@ -79,7 +79,7 @@ contract nftmarket is ERC721URIStorage{
 
     function createmarketitem(uint256 tokenID, uint256 price) private{
         require(price > 0, "Price must be atleast 1");
-        require(msg.value == lisingPrice, "Price must be equal to lising price");
+        require(msg.value == listingprice, "Price must be equal to lising price");
 
         idMarketItem[tokenID] = MarketItem(
             tokenID,
@@ -91,7 +91,7 @@ contract nftmarket is ERC721URIStorage{
 
         _transfer(msg.sender, address(this), tokenID);
 
-        emit marketitemcreated(
+        emit MarketItemCreated(
             tokenID,msg.sender, address(this),price,false
         );
 
@@ -100,16 +100,16 @@ contract nftmarket is ERC721URIStorage{
     //Function for resale token
 
     function reselltoken(uint256 tokenID, uint256 price) public payable{
-        require (idmarketitem[tokenID].owner ==msg.sender, "Only item owner can perform this task");
+        require (idMarketItem[tokenID].owner ==msg.sender, "Only item owner can perform this task");
 
         require(msg.value == listingprice, "Price must be atleast listing price");
         
-        idmarketitem[tokenID].sold=false;
-        idmarketitem[tokenID].price = price;
-        idmarketitem[tokenID].seller = payable(msg.sender);
-        idmarketitem[tokenID].owner = payable(address(this));
+        idMarketItem[tokenID].sold=false;
+        idMarketItem[tokenID].price = price;
+        idMarketItem[tokenID].seller = payable(msg.sender);
+        idMarketItem[tokenID].owner = payable(address(this));
 
-        _itemsold.decrement(); 
+        _itemsSold.decrement(); 
         _transfer(msg.sender, address(this),tokenID);
 
 
@@ -118,33 +118,33 @@ contract nftmarket is ERC721URIStorage{
     //Function creakemarketsale
 
     function createmarketsale(uint256 tokenID) public payable{
-        uint256 price = idmarketitem[tokenId].price;
+        uint256 price = idMarketItem[tokenID].price;
 
         require (msg.value == price,"Enter the asking price only");
 
-        idmarketitem[tokenID].owner = payable(msg.sender);
-        idmarketitem[tokenID].sold = true;
-        idmarketitem[tokenID].owner = payable(address(0));
+        idMarketItem[tokenID].owner = payable(msg.sender);
+        idMarketItem[tokenID].sold = true;
+        idMarketItem[tokenID].owner = payable(address(0));
 
-        _itemsold.increment();
+        _itemsSold.increment();
         _transfer(address(this), msg.sender, tokenID);
-        payable(owner).transfer(lisingPrice);
-        payable(idmarketitem[tokenID].seller).transfer(msg.value);
+        payable(owner).transfer(listingprice);
+        payable(idMarketItem[tokenID].seller).transfer(msg.value);
 
     
     }
 
     //Getting unsold NFts
-    function fetchmarketitem() public view returns(Marketitem[] memory ){
-        uint256 itemcount =_tokenIds.current();
-        uint256 unsolditemcount = _tokenIds.current()- _itemsSold.current();
+    function fetchmarketitem() public view returns(MarketItem[] memory ){
+        uint256 itemcount =_tokenID.current();
+        uint256 unsolditemcount = _tokenID.current()- _itemsSold.current();
         uint256 currentindex =0;
 
-        Marketitem[] memory items = new Marketitem[](unsolditemcount);
+        MarketItem[] memory items = new MarketItem[](unsolditemcount);
         for (uint256 i=0; i<itemcount; i++){
-            if(idmarketitem[i+1].owner == address(this)){
-                uint256 currentid=i+1;
-                marketitem storage currentitem = idmarketitem[currentID];
+            if(idMarketItem[i+1].owner == address(this)){
+                uint256 currentID=i+1;
+                MarketItem storage currentitem = idMarketItem[currentID];
                 items[currentindex]= currentitem;
                 currentindex +=1;
 
@@ -155,8 +155,8 @@ contract nftmarket is ERC721URIStorage{
     }
 
     //purchase item
-    function fetchmynft() public view returns(marketitem[] memory){
-        uint256 totalcount = _tokenIds.current();
+    function fetchmynft() public view returns(MarketItem[] memory){
+        uint256 totalcount = _tokenID.current();
         uint256 itemcount=0;
         uint256 currentindex =0;
 
@@ -170,8 +170,8 @@ contract nftmarket is ERC721URIStorage{
         MarketItem[] memory items =new MarketItem[](itemcount);
         for(uint256 i=0; i< totalcount; i++){
             if(idMarketItem[i+1].owner == msg.sender){
-            uint256 currentid =i+1;
-            MarketItem storage currentitem = idMarketItem[currentid];
+            uint256 currentID =i+1;
+            MarketItem storage currentitem = idMarketItem[currentID];
             items[currentindex] = currentitem;
             currentindex +=1;
             }
@@ -183,7 +183,7 @@ contract nftmarket is ERC721URIStorage{
     }
     //Single User items
     function fetchitemslisted() public view returns(MarketItem[] memory){
-        uint256 totalcount = _tokenids.current();
+        uint256 totalcount = _tokenID.current();
         uint256 itemcount = 0;
         uint256 currentindex=0;
 
@@ -196,8 +196,8 @@ contract nftmarket is ERC721URIStorage{
         MarketItem[] memory items = new MarketItem[](itemcount);
         for(uint256 i = 0; i<totalcount; i++){
             if(idMarketItem[i+1].seller== msg.sender){
-                uint256 currentid =i+1;
-                MarketItem storage currentitem = idMarketItem[currentid];
+                uint256 currentID =i+1;
+                MarketItem storage currentitem = idMarketItem[currentID];
                 items[currentindex]= currentitem;
                 currentindex += 1;
 
